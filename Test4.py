@@ -138,7 +138,7 @@ if __name__ == "__main__":
     model_name = '1-' + str(test_acc)[2:]
     model_path = './model'
     if not os.path.exists(model_path):
-        os.path.makedirs(model_path)
+        os.makedirs(model_path)
     model.save(os.path.join(model_path, model_name + '.h5'))
 
 
