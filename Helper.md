@@ -8,6 +8,7 @@
 
 1. 多试几次
 2. 换个网络，比如手机热点
+3. 如果使用的是命令行工具，且下载到一半进度条不动了（一分钟以上无变化），尝试用一下 `ctrl` + `c` ，我也不知道为什么，但是它有用。
 
 ## 指令 pip install tensorflow 报告找不到 TensorFlow ：Could not find a version that satisfies the requirement tensorflow
 
