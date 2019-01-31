@@ -65,7 +65,7 @@ if __name__ == "__main__":
     print("分词完成")
     print("开始生成词向量")
     
-    nlp = spacy.load("zh");
+    nlp = spacy.load("zh")
     
     tra_charas = np.zeros([len(tra_toks), 20, 128])
     for i, tokens in enumerate(tra_toks):
@@ -146,8 +146,7 @@ if __name__ == "__main__":
     print("验证数据处理完成")
     
     res = model.predict(val_charas)
-    
-    
+
     for i in range(len(res)):
         print("预测的各个种类的概率：")
         print(res[i])
