@@ -6,7 +6,7 @@ Created on 2019/1/31 17:46
 针对数据标签处理
 
     get_detail 方法
-        可以给出所有标签数据的层次关系，以及标签对应的商品数量
+        可以给出所有标签数据的层次关系，以及标签对应的商品数量和位置信息
     get_lab_dict_by_name 方法
         通过给出一个父级标签，此方法将获取父级标签下所有的子标签，
         并将子标签转化为数字，提供两种不用索引的字典
@@ -15,31 +15,30 @@ Created on 2019/1/31 17:46
 """
 
 def get_detail(labs):
-    """ 生成所有级别的商品标签以及相应的数量信息
+    """ 生成所有级别的商品标签以及相应的数量和位置信息
 
     生成的内容用于数据分析
 
     输出格式
 
-        本地生活 350
-            游戏充值 350
-                QQ充值 41		游戏点卡 309
-        宠物生活 2268
-        	宠物零食 64
-                猫零食 19		磨牙/洁齿 45
-            宠物玩具 198
-                猫爬架/猫抓板 48		毛绒.绳结 37		橡胶玩具 50		训导玩具 63
+        0. 本地生活 350 [0, 349]
+            0. 游戏充值 350 [0, 349]
+                    0. QQ充值 41 [0, 40]		1. 游戏点卡 309 [41, 349]
+
+        1. 宠物生活 2268 [350, 2617]
+            0. 宠物零食 64 [350, 413]
+                    0. 猫零食 19 [350, 368]		1. 磨牙/洁齿 45 [369, 413]
                         ··· ···
 
     :param labs:    按序的完整的商品标签数据
-    :return detail: 所有级别的商品标签以及相应的数量信息
+    :return detail: 所有级别的商品标签以及相应的数量和位置信息
     """
 
     detail = ""
 
     fi_s = -1
     fi_e = -1
-    fi_cou = 0
+    fi_cou = -1
     while fi_e != len(labs) -1:
 
         detail = detail + '\n'
@@ -51,17 +50,19 @@ def get_detail(labs):
             if fi_lab != fi_lab_bas:
                 fi_e = i - 1
                 fi_cou += 1
-                detail = detail + str(fi_cou) + '. ' + fi_lab_bas + ' ' + str(fi_e - fi_s + 1) + '\n'
+                detail = detail + str(fi_cou) + '. ' + fi_lab_bas + ' ' + str(fi_e - fi_s + 1) + \
+                         ' [' + str(fi_s) + ', ' +  str(fi_e) + ']\n'
                 break
             if i == len(labs) - 1:
                 fi_e = i
                 fi_cou += 1
-                detail = detail + str(fi_cou) + '. ' + fi_lab_bas + ' ' + str(fi_e - fi_s + 1) + '\n'
+                detail = detail + str(fi_cou) + '. ' + fi_lab_bas + ' ' + str(fi_e - fi_s + 1) + \
+                         ' [' + str(fi_s) + ', ' +  str(fi_e) + ']\n'
                 break
 
         se_s = fi_s - 1
         se_e = fi_s - 1
-        se_cou = 0
+        se_cou = -1
         while se_e != fi_e:
             se_s = se_e + 1
             se_lab_bas = labs[se_s].split('--')[1]
@@ -70,19 +71,21 @@ def get_detail(labs):
                 if se_lab != se_lab_bas:
                     se_e = j - 1
                     se_cou += 1
-                    detail = detail + '\t' + str(se_cou) + '. ' + se_lab_bas + ' ' + str(se_e - se_s + 1) + '\n'
+                    detail = detail + '\t' + str(se_cou) + '. ' + se_lab_bas + ' ' + str(se_e - se_s + 1) + \
+                             ' [' + str(se_s) + ', ' +  str(se_e) + ']\n'
                     break
                 if j == len(labs) - 1:
                     se_e = j
                     se_cou += 1
-                    detail = detail + '\t' + str(se_cou) + '. ' + se_lab_bas + ' ' + str(se_e - se_s + 1) + '\n'
+                    detail = detail + '\t' + str(se_cou) + '. ' + se_lab_bas + ' ' + str(se_e - se_s + 1) + \
+                             ' [' + str(se_s) + ', ' +  str(se_e) + ']\n'
                     break
 
             detail = detail + '\t\t\t'
 
             th_s = se_s - 1
             th_e = se_s - 1
-            th_cou = 0
+            th_cou = -1
             while th_e != se_e:
                 th_s = th_e + 1
                 th_lab_bas = labs[th_s].split('--')[2]
@@ -91,14 +94,16 @@ def get_detail(labs):
                     if th_lab != th_lab_bas:
                         th_e = k - 1
                         th_cou += 1
-                        detail = detail + str(th_cou) + '. ' + th_lab_bas + ' ' + str(th_e - th_s + 1) + '\t\t'
-                        if th_cou % 4 == 0:
+                        detail = detail + str(th_cou) + '. ' + th_lab_bas + ' ' + str(th_e - th_s + 1) + \
+                                 ' [' + str(th_s) + ', ' +  str(th_e) + ']\t\t'
+                        if (th_cou + 1) % 2 == 0:
                             detail += '\n\t\t\t'
                         break
                     if k == len(labs) - 1:
                         th_e = k
                         th_cou += 1
-                        detail = detail + str(th_cou) + '. ' + th_lab_bas + ' ' + str(th_e - th_s + 1) + '\t\t'
+                        detail = detail + str(th_cou) + '. ' + th_lab_bas + ' ' + str(th_e - th_s + 1) + \
+                                 ' [' + str(th_s) + ', ' +  str(th_e) + ']\t\t'
                         break
 
             detail = detail + '\n'
@@ -157,7 +162,6 @@ def get_lab_dict_by_name(labs, name=None, lev=0):
     return dict_lab, dict_num
 
 
-
 import pandas as pd
 import numpy as np
 
@@ -182,9 +186,11 @@ if __name__ == "__main__":
 
     # get_detail 测试代码
 
-    detail = get_detail(labs)
-    with open('./detail.txt', 'w', encoding='utf-8') as f:
-        f.write(detail)
+    # detail = get_detail(labs)
+    # with open('./detail.txt', 'w', encoding='utf-8') as f:
+    #     f.write(detail)
+
+
 
     # get_lab_dict_by_name 测试代码
 
@@ -194,4 +200,3 @@ if __name__ == "__main__":
     # dict_lab, dict_num = get_lab_dict_by_name(labs)
     # print(dict_lab)
     # print(dict_num)
-
