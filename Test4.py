@@ -135,7 +135,7 @@ if __name__ == "__main__":
     print("test loss is : ", test_loss)
     print("test accuracy is : ", test_acc)
 
-    model_name = '1-' + str(test_acc)[2:]
+    model_name = '0-' + str(test_acc)[2:]
     model_path = './model'
     if not os.path.exists(model_path):
         os.makedirs(model_path)
