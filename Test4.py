@@ -117,7 +117,7 @@ if __name__ == "__main__":
     
     input_shape = (20, 128)
     batch_size = 512
-    epochs = 5
+    epochs = 20
 
     model = models.Sequential()
     
@@ -140,6 +140,3 @@ if __name__ == "__main__":
     if not os.path.exists(model_path):
         os.makedirs(model_path)
     model.save(os.path.join(model_path, model_name + '.h5'))
-
-
-    

@@ -60,9 +60,20 @@ def get_lab_dict_by_name(labs, name=None, lev=0):
     return dict_lab, dict_num
 
 
+def get_range_by_name(labs, name=None, lev=0):
+    """ 通过给出的标签名称，计算出标签对应的商品信息下标范围
 
-def get_range(labs, name=None, lev=0):
+    For example
 
+        给出标签名称 宠物生活 ，返回闭区间 [350, 2617]
+
+    如果 lev 的值为 0 ，那么方法将返回闭区间 [0, len(labs) - 1]
+
+    :param labs: 按序的完整的商品标签数据
+    :param name: 标签的名称， lev 参数为 1 或 2 时有效
+    :param lev: 需要生成范围的商品标签的级别，默认为 0 ，输出第 0 级的商品标签
+    :return range: 对应商品的下标范围，闭区间
+    """
     range = []
     last = -1
     if lev == 1 or lev == 2:
@@ -78,6 +89,7 @@ def get_range(labs, name=None, lev=0):
         range.append(len(labs) - 1)
 
     return range
+
 
 import pandas as pd
 import numpy as np
@@ -105,40 +117,40 @@ if __name__ == "__main__":
 
     fi_lab_dict, fi_num_dict = get_lab_dict_by_name(labs)
     perc = 0.7
-
+    lev = 1
     # group running
-    for i, value in enumerate(fi_lab_dict):
-        print("start handle " + str(i) + " " + value)
+    for index, value in enumerate(fi_lab_dict):
+        print("start handle " + str(index) + " " + value)
 
-        se_lab_dict, se_num_dict = get_lab_dict_by_name(labs, value, 1)
+        lev_lab_dict, lev_num_dict = get_lab_dict_by_name(labs, value, lev)
 
-        if len(se_lab_dict) == 1:
+        if len(lev_lab_dict) == 1:
             continue
 
-        range = get_range(labs, value, 1)
-        se_data = ori_data[range[0]: (range[1] + 1)]
-        np.random.shuffle(se_data)
-        se_sams = se_data[:, 0]
-        se_labs = se_data[:, 1]
+        range = get_range_by_name(labs, value, lev)
+        lev_data = ori_data[range[0]: (range[1] + 1)]
+        np.random.shuffle(lev_data)
+        lev_sams = lev_data[:, 0]
+        lev_labs = lev_data[:, 1]
 
-        se_tra_sams = se_sams[0: int(perc * len(se_sams))]
-        se_tra_labs = se_labs[0: int(perc * len(se_labs))]
+        lev_tra_sams = lev_sams[0: int(perc * len(lev_sams))]
+        lev_tra_labs = lev_labs[0: int(perc * len(lev_labs))]
 
-        se_tes_sams = se_sams[int(perc * len(se_sams)): len(se_sams)]
-        se_tes_labs = se_labs[int(perc * len(se_labs)): len(se_labs)]
+        lev_tes_sams = lev_sams[int(perc * len(lev_sams)): len(lev_sams)]
+        lev_tes_labs = lev_labs[int(perc * len(lev_labs)): len(lev_labs)]
 
         print("开始分词")
 
-        se_tra_toks = []
-        for se_tra_sam in se_tra_sams:
-            toks = jieba.cut(se_tra_sam)
-            se_tra_toks.append(toks)
-        se_tra_toks = np.array(se_tra_toks)
-        se_tes_toks = []
-        for se_tes_sam in se_tes_sams:
-            toks = jieba.cut(se_tes_sam)
-            se_tes_toks.append(toks)
-        se_tes_toks = np.array(se_tes_toks)
+        lev_tra_toks = []
+        for lev_tra_sam in lev_tra_sams:
+            toks = jieba.cut(lev_tra_sam)
+            lev_tra_toks.append(toks)
+        lev_tra_toks = np.array(lev_tra_toks)
+        lev_tes_toks = []
+        for lev_tes_sam in lev_tes_sams:
+            toks = jieba.cut(lev_tes_sam)
+            lev_tes_toks.append(toks)
+        lev_tes_toks = np.array(lev_tes_toks)
 
         print("分词完成")
 
@@ -146,35 +158,35 @@ if __name__ == "__main__":
 
         nlp = spacy.load("zh")
 
-        se_tra_charas = np.zeros([len(se_tra_toks), 20, 128])
-        for i, tokens in enumerate(se_tra_toks):
+        lev_tra_charas = np.zeros([len(lev_tra_toks), 20, 128])
+        for i, tokens in enumerate(lev_tra_toks):
             for j, token in enumerate(tokens):
                 if j == 20 or type(token) == float:
                     break
-                se_tra_charas[i][j] = nlp.vocab[token].vector
+                lev_tra_charas[i][j] = nlp.vocab[token].vector
 
-        se_tes_charas = np.zeros([len(se_tes_toks), 20, 128])
-        for i, tokens in enumerate(se_tes_toks):
+        lev_tes_charas = np.zeros([len(lev_tes_toks), 20, 128])
+        for i, tokens in enumerate(lev_tes_toks):
             for j, token in enumerate(tokens):
                 if j == 20 or type(token) == float:
                     break
-                se_tes_charas[i][j] = nlp.vocab[token].vector
+                lev_tes_charas[i][j] = nlp.vocab[token].vector
 
         print("词向量生成完毕")
 
         print("开始处理标签")
 
-        se_tra_y = []
-        for se_tra_lab in se_tra_labs:
-            se_tra_y.append(se_lab_dict[se_tra_lab.split('--')[0]])
-        se_tra_y = np.array(se_tra_y)
-        se_tra_y = to_categorical(se_tra_y)
+        lev_tra_y = []
+        for lev_tra_lab in lev_tra_labs:
+            lev_tra_y.append(lev_lab_dict[lev_tra_lab.split('--')[lev]])
+        lev_tra_y = np.array(lev_tra_y)
+        lev_tra_y = to_categorical(lev_tra_y)
 
-        se_tes_y = []
-        for se_tes_lab in se_tes_labs:
-            se_tes_y.append(se_lab_dict[se_tes_lab.split('--')[0]])
-        se_tes_y = np.array(se_tes_y)
-        se_tes_y = to_categorical(se_tes_y)
+        lev_tes_y = []
+        for lev_tes_lab in lev_tes_labs:
+            lev_tes_y.append(lev_lab_dict[lev_tes_lab.split('--')[lev]])
+        lev_tes_y = np.array(lev_tes_y)
+        lev_tes_y = to_categorical(lev_tes_y)
 
         print("标签处理完成")
 
@@ -190,16 +202,16 @@ if __name__ == "__main__":
 
         model.add(layers.Flatten())
         model.add(layers.Dense(128, activation='relu'))
-        model.add(layers.Dense(len(se_lab_dict), activation='softmax'))
+        model.add(layers.Dense(len(lev_lab_dict), activation='softmax'))
 
         model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
-        model.fit(se_tra_charas, se_tra_y, epochs=epochs, batch_size=batch_size)
-        test_loss, test_acc = model.evaluate(se_tes_charas, se_tes_y, batch_size=batch_size)
+        model.fit(lev_tra_charas, lev_tra_y, epochs=epochs, batch_size=batch_size)
+        test_loss, test_acc = model.evaluate(lev_tes_charas, lev_tes_y, batch_size=batch_size)
         print("test loss is : ", test_loss)
         print("test accuracy is : ", test_acc)
 
-        model_name = '1-' + str(i) + '-' + str(test_acc)[2:]
-        model_path = './model/se'
+        model_name = str(lev) + '-' + str(index) + '-' + str(test_acc)[2:]
+        model_path = './model/' + str(lev)
         if not os.path.exists(model_path):
             os.makedirs(model_path)
         model.save(os.path.join(model_path, model_name + '.h5'))

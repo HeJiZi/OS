@@ -10,6 +10,8 @@ Created on 2019/1/31 17:46
     get_lab_dict_by_name 方法
         通过给出一个父级标签，此方法将获取父级标签下所有的子标签，
         并将子标签转化为数字，提供两种不用索引的字典
+    get_range_by_name 方法
+        通过给出的标签名称，计算出标签对应的商品信息下标范围，闭区间
 
 @author: SmacUL
 """
@@ -160,6 +162,37 @@ def get_lab_dict_by_name(labs, name=None, lev=0):
         dict_num[num] = lab
 
     return dict_lab, dict_num
+
+
+def get_range_by_name(labs, name=None, lev=0):
+    """ 通过给出的标签名称，计算出标签对应的商品信息下标范围
+
+    For example
+
+        给出标签名称 宠物生活 ，返回闭区间 [350, 2617]
+
+    如果 lev 的值为 0 ，那么方法将返回闭区间 [0, len(labs) - 1]
+
+    :param labs: 按序的完整的商品标签数据
+    :param name: 标签的名称， lev 参数为 1 或 2 时有效
+    :param lev: 需要生成范围的商品标签的级别，默认为 0 ，输出第 0 级的商品标签
+    :return range: 对应商品的下标范围，闭区间
+    """
+    range = []
+    last = -1
+    if lev == 1 or lev == 2:
+        for i, lab in enumerate(labs):
+            par_lab = lab.split('--')[lev - 1]
+            if name == par_lab:
+                if last == -1:
+                    range.append(i)
+                last = i
+        range.append(last)
+    else:
+        range.append(0)
+        range.append(len(labs) - 1)
+
+    return range
 
 
 import pandas as pd
