@@ -114,20 +114,22 @@ if __name__ == "__main__":
     ori_data = np.array(ori_data_df)
 
     labs = ori_data[:, 1]
-
+    # 获取一级标签的字典
     fi_lab_dict, fi_num_dict = get_lab_dict_by_name(labs)
     perc = 0.7
+    
     lev = 1
-    # group running
+    # for 循环一次性训练所有的二级标签模型
     for index, value in enumerate(fi_lab_dict):
         print("start handle " + str(index) + " " + value)
-
+        # 获取字典
         lev_lab_dict, lev_num_dict = get_lab_dict_by_name(labs, value, lev)
-
+        # 如果二级标签只有一个，跳过本次循环，不训练
         if len(lev_lab_dict) == 1:
             continue
-
+        # 获得 二级标签组 的商品信息下标范围
         range = get_range_by_name(labs, value, lev)
+        # 获得 二级标签组 对应的商品信息
         lev_data = ori_data[range[0]: (range[1] + 1)]
         np.random.shuffle(lev_data)
         lev_sams = lev_data[:, 0]
@@ -210,6 +212,7 @@ if __name__ == "__main__":
         print("test loss is : ", test_loss)
         print("test accuracy is : ", test_acc)
 
+        # 模型名称格式 [标签级别]-[标签下标]-[test_acc].h5
         model_name = str(lev) + '-' + str(index) + '-' + str(test_acc)[2:]
         model_path = './model/' + str(lev)
         if not os.path.exists(model_path):
