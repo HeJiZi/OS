@@ -113,10 +113,10 @@ def get_detail(labs):
     return detail
 
 
-def get_lab_dict_by_name(labs, name=None, lev=0):
+def get_lab_dict_by_name(labs, par_name=None, lev=0):
     """ 通过给出的父级标签名称，生成对应的子级标签的字典
 
-    例如给出的 name 为 宠物生活 ， lev 为 1 （由 0 开始计数）
+    例如给出的 par_name 为 宠物生活 ， lev 为 1 （由 0 开始计数）
 
         宠物生活
             宠物零食    宠物玩具    宠物主粮    出行装备    家居日用    洗护美容    医疗保健
@@ -132,9 +132,9 @@ def get_lab_dict_by_name(labs, name=None, lev=0):
 
     如果 lev 为 1 或 2 以外的数字，此方法将给出第 0 级商品标签
 
-    :param labs:    按序的完整的商品标签数据
-    :param name:    父级标签的名称， lev 参数为 1 或 2 时有效
-    :param lev:     需要生成字典的商品标签的级别，即子级标签的级别，默认为 0 ，输出第 0 级的商品标签
+    :param labs:        按序的完整的商品标签数据
+    :param par_name:    父级标签的名称， lev 参数为 1 或 2 时有效
+    :param lev:         需要生成字典的商品标签的级别，即子级标签的级别，默认为 0 ，输出第 0 级的商品标签
     :return dict_lab:   标签--数字 字典，以标签为索引
     :return dict_num:   数字--标签 字典，以数字为索引
     """
@@ -144,7 +144,7 @@ def get_lab_dict_by_name(labs, name=None, lev=0):
         print("当前生成第 %d 级标签字典（由 0 开始计数）" % lev)
         for lab in labs:
             par_lab = lab.split('--')[lev - 1]
-            if name == par_lab:
+            if par_name == par_lab:
                 lev_lab = lab.split('--')[lev]
                 if lev_lab not in ls:
                     ls.append(lev_lab)
@@ -211,11 +211,11 @@ if __name__ == "__main__":
     # 获得 labs 数据
     labs = ori_data[:, 1]
 
+    # get_range_by_name 测试代码
 
+    # res = get_range_by_name(labs, "猫零食", 2)
+    # print(res)
 
-
-    res = get_range_by_name(labs, "猫零食", 2)
-    print(res)
 
     # get_detail 测试代码
 
@@ -224,12 +224,11 @@ if __name__ == "__main__":
     #     f.write(detail)
 
 
-
     # get_lab_dict_by_name 测试代码
 
-    # dict_lab, dict_num = get_lab_dict_by_name(labs, '宠物生活', 1)
-    # print(dict_lab)
-    # print(dict_num)
+    dict_lab, dict_num = get_lab_dict_by_name(labs, '宠物生活', 1)
+    print(dict_lab)
+    print(dict_num)
     # dict_lab, dict_num = get_lab_dict_by_name(labs)
     # print(dict_lab)
     # print(dict_num)
